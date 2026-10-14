@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Salary Prediction | Career Insights</title>
+    <meta name="description" content="Predict estimated employee salaries using machine learning based on education, experience, age, and job role.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy: #10243a;
+            --blue: #183d5d;
+            --teal: #11b8a6;
+            --light: #f3f7fb;
+            --text: #26384a;
+            --muted: #718096;
+            --border: #e1e8ef;
+        }
+
+        * {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--light);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .navbar {
+            background: var(--navy);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: .3px;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            width: 38px;
+            height: 38px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: var(--teal);
+            color: var(--navy);
+            margin-right: 8px;
+        }
+
+        .navbar .nav-link {
+            color: #d8e4ee;
+            margin-left: 10px;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--teal);
+        }
+
+        .hero {
+            background: linear-gradient(120deg, #10243a, #1b4c6b);
+            color: white;
+            padding: 75px 0 85px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 55px solid rgba(17, 184, 166, .12);
+            border-radius: 50%;
+            right: -70px;
+            top: -90px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: rgba(17, 184, 166, .15);
+            border: 1px solid rgba(17, 184, 166, .4);
+            color: #8af3e7;
+            border-radius: 50px;
+            padding: 8px 14px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.7rem);
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        .hero h1 span {
+            color: var(--teal);
+        }
+
+        .hero p {
+            color: #d0deea;
+            max-width: 650px;
+            line-height: 1.8;
+        }
+
+        .hero-visual {
+            text-align: center;
+            font-size: 120px;
+            color: var(--teal);
+            opacity: .95;
+        }
+
+        .section {
+            padding: 65px 0;
+        }
+
+        .section-title {
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        .info-card,
+        .prediction-card,
+        .metric-card,
+        .faq-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 25px;
+            height: 100%;
+            box-shadow: 0 8px 25px rgba(16, 36, 58, .04);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .info-card:hover,
+        .metric-card:hover,
+        .faq-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 32px rgba(16, 36, 58, .09);
+        }
+
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #e4faf6;
+            color: #078c7e;
+            font-size: 23px;
+            margin-bottom: 18px;
+        }
+
+        .info-card h5,
+        .metric-card h5,
+        .faq-card h5 {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .info-card p,
+        .faq-card p {
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        .prediction-section {
+            background: #eaf1f7;
+        }
+
+        .prediction-card {
+            padding: 35px;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 14px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 48px;
+            border-color: #d8e2eb;
+            border-radius: 10px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 .2rem rgba(17, 184, 166, .14);
+        }
+
+        .btn-predict {
+            background: var(--teal);
+            color: var(--navy);
+            border: none;
+            border-radius: 10px;
+            padding: 14px 22px;
+            font-weight: 800;
+            transition: transform .2s ease, background .2s ease;
+        }
+
+        .btn-predict:hover {
+            background: #0ed0bb;
+            color: var(--navy);
+            transform: translateY(-2px);
+        }
+
+        .result-panel {
+            background: linear-gradient(135deg, #10243a, #1b4c6b);
+            color: white;
+            border-radius: 18px;
+            padding: 28px;
+            margin-top: 25px;
+        }
+
+        .result-amount {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            color: #70f0df;
+            overflow-wrap: anywhere;
+        }
+
+        .result-note {
+            color: #d0deea;
+            line-height: 1.7;
+        }
+
+        .table {
+            --bs-table-bg: transparent;
+        }
+
+        .table thead th {
+            background: #eaf2f7;
+            color: var(--navy);
+            white-space: nowrap;
+        }
+
+        .algorithm-number {
+            display: inline-flex;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--navy);
+            color: white;
+            font-weight: 800;
+            margin-right: 10px;
+        }
+
+        .notice {
+            border-left: 4px solid var(--teal);
+            background: #e4faf6;
+            padding: 16px 18px;
+            border-radius: 8px;
+            color: #28534f;
+            line-height: 1.7;
+        }
+
+        footer {
+            background: var(--navy);
+            color: #d0deea;
+            padding: 28px 0;
+        }
+
+        footer a {
+            color: var(--teal);
+            text-decoration: none;
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                padding: 55px 0;
+            }
+
+            .hero-visual {
+                font-size: 85px;
+                margin-top: 25px;
+            }
+
+            .prediction-card {
+                padding: 22px;
+            }
+
+            .section {
+                padding: 48px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#home">
+            <span class="brand-icon"><i class="bi bi-briefcase-fill"></i></span>
+            SalarySense
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#about">Project</a></li>
+                <li class="nav-item"><a class="nav-link" href="#dataset">Dataset</a></li>
+                <li class="nav-item"><a class="nav-link" href="#algorithm">Algorithm</a></li>
+                <li class="nav-item"><a class="nav-link" href="#prediction">Predict Salary</a></li>
+                <li class="nav-item"><a class="nav-link" href="#faq">FAQs</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="hero" id="home">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-label">
+                    <i class="bi bi-graph-up-arrow me-2"></i>
+                    MACHINE LEARNING · REGRESSION
+                </div>
+
+                <h1>Understand Your Value.<br><span>Predict Your Salary.</span></h1>
+
+                <p class="mt-4 mb-4">
+                    Explore an estimated salary based on your experience,
+                    education, age, and job role using a machine learning
+                    regression model.
+                </p>
+
+                <a href="#prediction" class="btn btn-predict">
+                    <i class="bi bi-calculator me-2"></i>Predict My Salary
+                </a>
+                <a href="#about" class="btn btn-outline-light ms-2 mt-2 mt-sm-0">
+                    Explore Project
+                </a>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="hero-visual">
+                    <i class="bi bi-person-workspace"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="section" id="about">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-title">About the Project</h2>
+            <p class="section-subtitle">
+                A machine learning application for exploring employee salary estimates.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="info-card">
+                    <div class="icon-box"><i class="bi bi-bullseye"></i></div>
+                    <h5>Project Objective</h5>
+                    <p>
+                        Estimate employee salary from available career
+                        attributes and learn how regression models identify
+                        relationships in historical data.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="info-card">
+                    <div class="icon-box"><i class="bi bi-person-lines-fill"></i></div>
+                    <h5>Employee Profile</h5>
+                    <p>
+                        The input profile includes age, gender, education
+                        level, job title, and years of professional experience.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="info-card">
+                    <div class="icon-box"><i class="bi bi-cpu"></i></div>
+                    <h5>Prediction System</h5>
+                    <p>
+                        A saved Scikit-learn pipeline processes the employee
+                        details and produces a continuous salary estimate.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice mt-4">
+            <strong><i class="bi bi-info-circle me-2"></i>Important:</strong>
+            The prediction depends on the quality, size, currency, and
+            coverage of your training dataset. It is an estimate, not a
+            guaranteed salary offer or professional compensation assessment.
+        </div>
+    </div>
+</section>
+
+<section class="section bg-white" id="dataset">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-title">Dataset Column Details</h2>
+            <p class="section-subtitle">
+                The input columns are used to predict the target column, Salary.
+            </p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Column Name</th>
+                        <th>Data Type</th>
+                        <th>Description</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>Age</code></td>
+                        <td>Numeric</td>
+                        <td>Employee's age in years.</td>
+                        <td><span class="badge text-bg-primary">Input</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>Gender</code></td>
+                        <td>Categorical</td>
+                        <td>Gender category recorded in the dataset.</td>
+                        <td><span class="badge text-bg-primary">Input</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>Education Level</code></td>
+                        <td>Categorical</td>
+                        <td>Highest recorded education level, such as Bachelor's, Master's, or PhD.</td>
+                        <td><span class="badge text-bg-primary">Input</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>Job Title</code></td>
+                        <td>Categorical</td>
+                        <td>Employee's job role, such as Software Engineer or Data Analyst.</td>
+                        <td><span class="badge text-bg-primary">Input</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>Years of Experience</code></td>
+                        <td>Numeric</td>
+                        <td>Number of years of work experience.</td>
+                        <td><span class="badge text-bg-primary">Input</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>Salary</code></td>
+                        <td>Numeric</td>
+                        <td>The recorded salary value the model learns to predict.</td>
+                        <td><span class="badge text-bg-success">Target</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-secondary small mt-3">
+            The dataset's salary currency and whether the values are annual or monthly
+            must be confirmed from the original data source.
+        </p>
+    </div>
+</section>
+
+<section class="section" id="algorithm">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-title">Algorithm Details</h2>
+            <p class="section-subtitle">
+                Gradient Boosting Regression learns by combining a sequence of decision trees.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5><span class="algorithm-number">1</span>Data Preprocessing</h5>
+                    <p>
+                        Missing categorical values are filled using the most frequent
+                        value. Missing numerical values are filled using the median.
+                        One-hot encoding converts categorical columns into numerical
+                        features that the model can process.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5><span class="algorithm-number">2</span>Gradient Boosting</h5>
+                    <p>
+                        The model builds decision trees sequentially. Each new tree
+                        attempts to improve the existing model by learning patterns
+                        in its remaining errors.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5><span class="algorithm-number">3</span>Model Evaluation</h5>
+                    <p>
+                        Mean Absolute Error (MAE) measures the average absolute
+                        difference between actual and predicted salaries. R² is also
+                        reported when the test target has sufficient variation.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5><span class="algorithm-number">4</span>Prediction</h5>
+                    <p>
+                        After evaluation, the pipeline is trained on all valid
+                        records and saved as a pickle model file. Flask loads
+                        this file to estimate salaries for new employee profiles.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-4">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <div class="icon-box"><i class="bi bi-diagram-3"></i></div>
+                    <h5>Model Type</h5>
+                    <p class="text-secondary mb-0">Supervised learning · Regression</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <div class="icon-box"><i class="bi bi-tree"></i></div>
+                    <h5>Estimator</h5>
+                    <p class="text-secondary mb-0">Gradient Boosting Regressor</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <div class="icon-box"><i class="bi bi-code-square"></i></div>
+                    <h5>Technology</h5>
+                    <p class="text-secondary mb-0">Python · Flask · Pandas · Scikit-learn</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section prediction-section" id="prediction">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-title">Employee Salary Predictor</h2>
+            <p class="section-subtitle">
+                Enter an employee profile to generate a machine learning estimate.
+            </p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="prediction-card">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-box mb-0 me-3">
+                            <i class="bi bi-person-vcard"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">Employee Information</h4>
+                            <p class="text-secondary mb-0 small">
+                                Complete all five fields below.
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="#prediction" id="salaryForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="age" class="form-label">Age</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="age"
+                                    name="age"
+                                    min="18"
+                                    max="100"
+                                    required
+                                    value="{{ form_data.get('age', '') }}"
+                                    placeholder="e.g. 32">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">Select gender</option>
+                                    {% for item in ['Male', 'Female', 'Other'] %}
+                                    <option value="{{ item }}" {% if form_data.get('gender') == item %}selected{% endif %}>{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="education" class="form-label">Education Level</label>
+                                <select class="form-select" id="education" name="education" required>
+                                    <option value="">Select education</option>
+                                    {% for item in ["High School", "Bachelor's", "Master's", "PhD"] %}
+                                    <option value="{{ item }}" {% if form_data.get('education') == item %}selected{% endif %}>{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="experience" class="form-label">Years of Experience</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="experience"
+                                    name="experience"
+                                    min="0"
+                                    max="80"
+                                    step="0.1"
+                                    required
+                                    value="{{ form_data.get('experience', '') }}"
+                                    placeholder="e.g. 5">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="job_title" class="form-label">Job Title</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="job_title"
+                                    name="job_title"
+                                    maxlength="100"
+                                    required
+                                    value="{{ form_data.get('job_title', '') }}"
+                                    placeholder="e.g. Software Engineer">
+                                <div class="form-text">
+                                    Use a job title similar to the titles in your training dataset.
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-predict w-100" id="predictButton">
+                                    <i class="bi bi-calculator me-2"></i>Estimate Salary
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if prediction is not none %}
+                    <div class="result-panel" id="predictionResult" aria-live="polite">
+                        <div class="small text-uppercase fw-bold mb-2">
+                            <i class="bi bi-check-circle me-2"></i>Estimated Salary
+                        </div>
+
+                        <div class="result-amount">
+                            ₹{{ "{:,.2f}".format(prediction) }}
+                        </div>
+
+                        <p class="result-note mt-3 mb-2">
+                            This is a model-generated estimate based on the
+                            employee details provided.
+                        </p>
+
+                        <hr class="border-light opacity-25">
+
+                        <p class="result-note small mb-0">
+                            The displayed number uses the same currency and scale
+                            as the Salary values in your dataset. This result is
+                            not a guaranteed salary offer.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section bg-white" id="faq">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-title">Sample Questions and Answers</h2>
+            <p class="section-subtitle">
+                Understand the expected inputs and the limits of the prediction.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="faq-card">
+                    <h5><i class="bi bi-question-circle text-success me-2"></i>What does the model predict?</h5>
+                    <p>
+                        It predicts a numerical salary estimate using age, gender,
+                        education level, job title, and years of experience.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="faq-card">
+                    <h5><i class="bi bi-question-circle text-success me-2"></i>Why is Gradient Boosting used?</h5>
+                    <p>
+                        Gradient Boosting combines multiple decision trees in
+                        sequence to learn patterns and reduce prediction errors
+                        on suitable datasets.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="faq-card">
+                    <h5><i class="bi bi-question-circle text-success me-2"></i>What if I enter a new job title?</h5>
+                    <p>
+                        The encoder is configured to handle previously unseen
+                        categories. However, a new job title may not have enough
+                        learned examples for a reliable salary estimate.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="faq-card">
+                    <h5><i class="bi bi-question-circle text-success me-2"></i>Is the estimate always accurate?</h5>
+                    <p>
+                        No. Accuracy depends on dataset size, data quality,
+                        representation of job roles, and how well the training
+                        records match the employee being evaluated.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="faq-card">
+                    <h5><i class="bi bi-question-circle text-success me-2"></i>What is MAE?</h5>
+                    <p>
+                        Mean Absolute Error is the average absolute difference
+                        between predicted and actual salary values. It is
+                        expressed in the same units as the salary target.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="faq-card">
+                    <h5><i class="bi bi-question-circle text-success me-2"></i>Can I use this for a real salary negotiation?</h5>
+                    <p>
+                        Treat it as an educational demonstration, not a definitive
+                        compensation benchmark. Compare reliable local salary
+                        surveys, responsibilities, location, and benefits too.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row align-items-center gy-3">
+            <div class="col-md-7">
+                <h5 class="text-white fw-bold mb-2">
+                    <i class="bi bi-briefcase-fill me-2" style="color: #11b8a6;"></i>
+                    SalarySense
+                </h5>
+                <p class="small mb-0">
+                    Employee Salary Prediction using Gradient Boosting Regression.
+                </p>
+            </div>
+
+            <div class="col-md-5 text-md-end">
+                <p class="small mb-1">
+                    &copy; <span id="copyrightYear"></span> Employee Salary Prediction Project.
+                </p>
+                <p class="small mb-0">
+                    Developed for educational and machine learning purposes.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById("copyrightYear").textContent = new Date().getFullYear();
+
+    document.getElementById("salaryForm").addEventListener("submit", function () {
+        const button = document.getElementById("predictButton");
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Predicting Salary...';
+    });
+</script>
+
+</body>
+</html>
